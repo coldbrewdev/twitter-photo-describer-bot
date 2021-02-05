@@ -1,0 +1,6 @@
+# Project exclude paths
+/venv/
+/describe/
+notepad
+error_log.txt
+config.py
