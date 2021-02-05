@@ -1,6 +1,7 @@
 # Project exclude paths
 /venv/
 /describe/
+/.idea/
 notepad
 error_log.txt
 config.py
