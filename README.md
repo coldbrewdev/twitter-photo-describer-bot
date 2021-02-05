@@ -45,7 +45,8 @@ pip install pillow
 The bot is currently configured to be called once an hour, with this code: 
 ```python:
 current_hour = dt.utcnow().hour
-    if current_hour in [1, 17]:...
+...
+if current_hour in [1, 17]:...
 ```
 in the describer.py file to allow for easy
  changes to post frequency.
