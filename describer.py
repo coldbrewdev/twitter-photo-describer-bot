@@ -48,8 +48,8 @@ def send_message(bot, chat, message):
 
 
 def files_by_format(path, formats):
-    y = os.listdir(path)
-    file_list = [x for x in y if x.endswith(formats)]
+    files = os.listdir(path)
+    file_list = [f for f in files if f.endswith(formats)]
     return file_list
 
 
