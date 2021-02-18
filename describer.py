@@ -41,10 +41,16 @@ def publish_to_describer(image_string):
     api.update_status(status=tweet, media_ids=[media.media_id])
 
 
-def send_tel_update(message):
-    parsetext = urllib.parse.quote_plus(message)
-    requests.get("https://api.telegram.org/" + config.bot_id
-                 + "/sendMessage?chat_id=" + config.chat_id + "&text={}".format(parsetext))
+def send_message(bot, chat, message):
+    parse = urllib.parse.quote_plus(message)
+    response = requests.get("https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}".format(bot, chat, parse))
+    return response
+
+
+def files_by_format(path, formats):
+    y = os.listdir(path)
+    file_list = [x for x in y if x.endswith(formats)]
+    return file_list
 
 
 def update_error_log(message):
@@ -57,14 +63,14 @@ def update_error_log(message):
 
 def main():
     """Selects a random jpeg file, publishes it, logs it, deletes it"""
-    file = ''
-    count = 0
-    while count < 10 and not file.endswith('.jpeg'):
-        file = random.choice(os.listdir(config.local_image_folder))
-        count += 1
-    if count == 10:
-        send_tel_update('An error occurred on Describer. You might need to upload more photos.')
-        return
+    image_files = files_by_format(config.local_image_folder, ('.jpeg', '.png', '.jpg'))
+    if len(image_files) in [1, 2, 5, 10]:
+        message = 'There are ' + str(len(image_files)) + ' photos left in Describer (including today\'s photo).'
+        send_message(config.bot_id, config.chat_id, message)
+    if not image_files:
+        send_message(config.bot_id, config.chat_id, 'Describer is out of photos.')
+        raise SystemExit
+    file = random.choice(image_files)
     t = str(dt.datetime.now())
     publish_to_describer(file)
     with open(config.local_image_folder + 'log_sent_photos.txt', 'a') as log:
@@ -80,5 +86,5 @@ if __name__ == '__main__':
     except Exception as e:
         x = str(e)
         y = ''.join(traceback.format_exc())
-        send_tel_update('Describer encountered an error.')
+        send_message(config.bot_id, config.chat_id, 'Describer encountered an error.')
         update_error_log('Describer' + x+y)
